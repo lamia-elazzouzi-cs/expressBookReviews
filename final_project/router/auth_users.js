@@ -59,10 +59,12 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     let book = books[isbn];
 
     if (username) {
-        // if the requested book exists
+        // if the user is authenticated
         if (book) {
+            // if the requested book exists
             book["reviews"][username] = review;
             books[isbn] = book;
+
             res.send(JSON.stringify(book, null, 4));
         } else {
             // if the requested book doesn't exist
@@ -75,6 +77,35 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
             .json({ message: "To post a review, please login first." });
     }
 });
+
+//delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    let { username } = req.session.authorization;
+    let book = books[isbn];
+
+    if (username) {
+        // if the user is authenticated
+        if (book) {
+            // if the requested book exists
+            delete book["reviews"][username];
+            books[isbn] = book;
+
+            res.send(JSON.stringify(book, null, 4));
+        } else {
+            // if the requested book doesn't exist
+            return res.status(404)
+                .json({ message: "The requested book does not exist" });
+        }
+    } else {
+        // if the user is not authenticated
+        return res.status(404)
+            .json({ message: "To delete a review, please login first." });
+    }
+
+});
+
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
