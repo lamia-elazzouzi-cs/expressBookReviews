@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
+const session = require('express-session');
 const regd_users = express.Router();
 
 let users = [];
@@ -50,8 +51,29 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-    //Write your code here
-    return res.status(300).json({ message: "Yet to be implemented" });
+
+    const isbn = req.params.isbn;
+    const review = req.query.review;
+
+    let { username } = req.session.authorization;
+    let book = books[isbn];
+
+    if (username) {
+        // if the requested book exists
+        if (book) {
+            book["reviews"][username] = review;
+            books[isbn] = book;
+            res.send(JSON.stringify(book, null, 4));
+        } else {
+            // if the requested book doesn't exist
+            return res.status(404)
+                .json({ message: "The requested book does not exist" });
+        }
+    } else {
+        // if the user is not authenticated
+        return res.status(404)
+            .json({ message: "To post a review, please login first." });
+    }
 });
 
 module.exports.authenticated = regd_users;

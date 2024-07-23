@@ -3,8 +3,8 @@ let books = {
         "author": "Chinua Achebe",
         "title": "Things Fall Apart",
         "reviews": {
-            1: "nada",
-            2: "hello"
+            "lamia": "nada",
+            "friend": "hello"
         }
     },
     2: { "author": "Hans Christian Andersen", "title": "Fairy tales", "reviews": {} },
