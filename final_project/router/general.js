@@ -40,7 +40,7 @@ public_users.get('/', async function (req, res) {
     }).then(result => {
         return res.send(JSON.stringify(books, null, 4));
     }).catch((error) => {
-        console.log("GET '/' error.");
+        console.log("Error: GET '/'");
         res.status(500).json({ message: "There was an error retrieving book list." });
     });
 
@@ -49,14 +49,21 @@ public_users.get('/', async function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', function (req, res) {
 
-    const isbn = req.params.isbn;
-    let book = books[isbn];
-    if (book) {
-        res.send(JSON.stringify(book, null, 4));
-    } else {
-        return res.status(404)
-            .json({ message: "The requested book does not exist" });
-    }
+    new Promise((resolve, reject) => {
+        const isbn = req.params.isbn;
+        let book = books[isbn];
+        if (book) {
+            resolve(book);
+        } else {
+            reject("Promise rejected!");
+        }
+    })
+        .then(book => res.send(JSON.stringify(book, null, 4)))
+        .catch(error => {
+            console.log("Error: GET '/isbn/:isbn'");
+            return res.status(404)
+                .json({ message: "The requested book does not exist" });
+        });
 });
 
 // Get book details based on author
