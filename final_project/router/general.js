@@ -75,14 +75,14 @@ public_users.get('/author/:author', function (req, res) {
 
         if (filteredBooks.length > 0) {
             resolve(filteredBooks);
-        }else{
+        } else {
             reject("Error");
         }
     });
     searchByAuthor.then((filteredBooks) => {
         return res.send(JSON.stringify(filteredBooks, null, 4));
     }).catch((error) => {
-        console.log(error+": GET '/author/:author'");
+        console.log(error + ": GET '/author/:author'");
         return res.status(404).json({ message: "Can't find any books from that author." });
     });
 });
@@ -90,16 +90,24 @@ public_users.get('/author/:author', function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title', function (req, res) {
+    
+    const searchByTitle = new Promise((resolve, reject) => {
+        const title = req.params.title;
+        let filteredBooks = Object.values(books)
+            .filter((book) => book["title"] === title);
 
-    const title = req.params.title;
-
-    let filteredBooks = Object.values(books)
-        .filter((book) => book["title"] === title);
-    if (filteredBooks.length > 0) {
+        if (filteredBooks.length > 0) {
+            resolve(filteredBooks);
+        } else {
+            reject("Error");
+        }
+    });
+    searchByTitle.then(filteredBooks => {
         res.send(JSON.stringify(filteredBooks, null, 4));
-    } else {
+    }).catch(error => {
+        console.log(error + ": GET '/title/:title'");
         return res.status(404).json({ message: "Can't find a book with that title." });
-    }
+    });
 });
 
 //  Get book review
